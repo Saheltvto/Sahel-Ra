@@ -14,33 +14,183 @@
   <meta name="theme-color" content="#4318FF">
   
   <!-- آیکون برنامه -->
-  <link rel="apple-touch-icon" href="icon.png">
-  <link rel="icon" type="image/png" href="icon.png">
+  <link rel="apple-touch-icon" href="https://lh3.googleusercontent.com/d/1MjBP1nitG_R3pTYPfc-BYBwzeuEZs5aO">
+  <link rel="icon" type="image/png" href="https://lh3.googleusercontent.com/d/1MjBP1nitG_R3pTYPfc-BYBwzeuEZs5aO">
+
+  <!-- Bootstrap 5 CSS & Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.rtl.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
   <style>
+    :root {
+      --primary-color: #4318FF;
+      --bg-gradient: linear-gradient(135deg, #868CFF 0%, #4318FF 100%);
+    }
+
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
     }
+
     html, body {
       width: 100vw;
       height: 100vh;
       overflow: hidden;
-      background-color: #4318FF;
+      background-color: var(--primary-color);
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
     }
-    iframe {
+
+    /* ۱. کاور / اسپلاش اسکرین تمام صفحه */
+    #splash-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: var(--bg-gradient);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 999999;
+      color: #fff;
+      transition: opacity 0.6s ease, visibility 0.6s ease;
+    }
+
+    .splash-logo {
+      width: 110px;
+      height: 110px;
+      object-fit: contain;
+      animation: pulse 2s infinite ease-in-out;
+      filter: drop-shadow(0 10px 15px rgba(0,0,0,0.2));
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(0.95); opacity: 0.85; }
+      50% { transform: scale(1.05); opacity: 1; }
+      100% { transform: scale(0.95); opacity: 0.85; }
+    }
+
+    /* ۲. صفحه ورود شیک و مدرن (Glassmorphism) */
+    #page-login {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: var(--bg-gradient);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 99998;
+      padding: 1.5rem;
+    }
+
+    .login-card {
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(12px);
+      border-radius: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+      width: 100%;
+      max-width: 380px;
+      padding: 2.5rem 2rem;
+      text-align: center;
+    }
+
+    .login-logo {
+      width: 85px;
+      height: 85px;
+      object-fit: contain;
+      margin-bottom: 1rem;
+    }
+
+    .form-control:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 0.25rem rgba(67, 24, 255, 0.2);
+    }
+
+    /* ۳. آی‌فریم تمام صفحه */
+    #main-iframe {
       width: 100%;
       height: 100%;
       border: none;
       display: block;
+      background-color: #fff;
     }
   </style>
 </head>
 <body>
 
-  <!-- لینک گوگل اسکریپت خود را به جای عبارت زیر بگذارید -->
-  <iframe src="https://script.google.com/macros/s/AKfycbwTa9GjSmUAKyYtJY4q1YdU2XdMUk3iz4dssvnWjuXgLxou6jOaMW0kNLZFlBsisA0nAw/exec" allow="geolocation; microphone; camera"></iframe>
+  <!-- ۱. صفحه کاور (Splash Screen) -->
+  <div id="splash-screen">
+    <img src="https://lh3.googleusercontent.com/d/1MjBP1nitG_R3pTYPfc-BYBwzeuEZs5aO" alt="حسابداری ساحل" class="splash-logo mb-3" onerror="this.src='https://via.placeholder.com/110?text=Sahel'">
+    <h4 class="fw-bold mb-2">حسابداری هوشمند ساحل</h4>
+    <p class="small opacity-75 mb-4">در حال بارگذاری نرم‌افزار...</p>
+    <div class="spinner-border text-light spinner-border-sm" role="status"></div>
+  </div>
+
+  <!-- ۲. صفحه ورود (Login Card) -->
+  <div id="page-login" class="d-none">
+    <div class="login-card">
+      <img src="https://lh3.googleusercontent.com/d/1MjBP1nitG_R3pTYPfc-BYBwzeuEZs5aO" alt="حسابداری ساحل" class="login-logo" onerror="this.src='https://via.placeholder.com/85?text=Sahel'">
+      
+      <h5 class="fw-bold text-dark mb-1">ورود به سیستم</h5>
+      <p class="text-muted small mb-4">حسابداری هوشمند ساحل</p>
+
+      <form onsubmit="handleLogin(event)">
+        <div class="form-floating mb-3 text-start">
+          <input type="text" class="form-control rounded-3" id="username" placeholder="نام کاربری" required>
+          <label for="username"><i class="bi bi-person me-1"></i> نام کاربری</label>
+        </div>
+
+        <div class="form-floating mb-4 text-start">
+          <input type="password" class="form-control rounded-3" id="password" placeholder="کلمه عبور" required>
+          <label for="password"><i class="bi bi-lock me-1"></i> کلمه عبور</label>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100 py-2.5 rounded-pill fw-bold shadow-sm style-btn" style="background-color: var(--primary-color); border: none;">
+          <i class="bi bi-box-arrow-in-right me-1"></i> ورود به برنامه
+        </button>
+      </form>
+
+      <div class="text-muted mt-4" style="font-size: 0.75rem;">
+        نسخه ۴.۸ پرو © ۱۴۰۵ - ساحل کامپیوتر
+      </div>
+    </div>
+  </div>
+
+  <!-- ۳. آی‌فریم اصلی وب‌اپلیکیشن Google Apps Script -->
+  <iframe 
+    id="main-iframe"
+    src="https://script.google.com/macros/s/AKfycbwDATj1muMHYOjXsvmQMfenUJlUVdQFdCpFd0MCHaVSa2hKjR9Fc169MlcyASN78A1XPA/exec" 
+    allow="geolocation; microphone; camera">
+  </iframe>
+
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      // زمان‌بندی نمایش کاور اولیه (Splash Screen)
+      setTimeout(() => {
+        const splash = document.getElementById('splash-screen');
+        splash.style.opacity = '0';
+        splash.style.visibility = 'hidden';
+
+        // بررسی اینکه آیا کاربر قبلاً وارد شده است یا خیر
+        const isLoggedIn = localStorage.getItem('isLoggedIn');
+        if (isLoggedIn !== 'true') {
+          document.getElementById('page-login').classList.remove('d-none');
+        }
+      }, 1500);
+    });
+
+    // مدیریت لاگین
+    function handleLogin(e) {
+      e.preventDefault();
+      localStorage.setItem('isLoggedIn', 'true');
+      document.getElementById('page-login').classList.add('d-none');
+    }
+  </script>
 
 </body>
 </html>
