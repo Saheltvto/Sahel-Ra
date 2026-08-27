@@ -100,20 +100,24 @@
   <script>
     // ==========================================================
     // مدیریت نشست ماندگار واقعی (OTP) در سطح این صفحه (top-level).
-    // توکن هم در localStorage و هم در خودِ آدرس URL این صفحه
-    // نگه‌داری می‌شود تا مستقل از رفتار storage در آیفون باشد.
+    // توکن در localStorage نگه‌داری می‌شود. اگر توکن قدیمی در URL
+    // پیدا شود (لینک قدیمی)، خوانده و بلافاصله از آدرس‌بار پاک
+    // می‌شود تا در تاریخچه/اشتراک‌گذاری این صفحه باقی نماند.
     // ==========================================================
     const GAS_APP_URL = 'https://script.google.com/macros/s/AKfycbwDATj1muMHYOjXsvmQMfenUJlUVdQFdCpFd0MCHaVSa2hKjR9Fc169MlcyASN78A1XPA/exec';
-    const TOKEN_KEY = 'sahel_app_token';
+    const TOKEN_KEY = 'sahel_rafati_app_token';
+
+    if (navigator.storage && navigator.storage.persist) {
+      navigator.storage.persist().catch(function () {});
+    }
+
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function () {
+        navigator.serviceWorker.register('./sw.js').catch(function () {});
+      });
+    }
 
     function getStoredToken() {
-      try {
-        const urlToken = new URLSearchParams(window.location.search).get('token');
-        if (urlToken) {
-          saveToken(urlToken);
-          return urlToken;
-        }
-      } catch (e) {}
       try { return localStorage.getItem(TOKEN_KEY) || ''; } catch (e) { return ''; }
     }
     function saveToken(token) {
@@ -121,6 +125,17 @@
     }
     function clearToken() {
       try { localStorage.removeItem(TOKEN_KEY); } catch (e) {}
+    }
+    function consumeLegacyUrlToken() {
+      try {
+        const url = new URL(window.location.href);
+        const legacyToken = url.searchParams.get('token');
+        if (legacyToken) {
+          saveToken(legacyToken);
+          url.searchParams.delete('token');
+          window.history.replaceState({}, '', url.toString());
+        }
+      } catch (e) {}
     }
     function buildIframeSrc() {
       const token = getStoredToken();
@@ -145,18 +160,10 @@
 
       if (data.type === 'SAHEL_AUTH' && data.token) {
         saveToken(data.token);
-        try {
-          const url = new URL(window.location.href);
-          url.searchParams.set('token', data.token);
-          window.history.replaceState({}, '', url.toString());
-        } catch (e) {}
       } else if (data.type === 'SAHEL_LOGOUT') {
         clearToken();
-        try {
-          const url = new URL(window.location.href);
-          url.searchParams.delete('token');
-          window.history.replaceState({}, '', url.toString());
-        } catch (e) {}
+      } else if (data.type === 'SAHEL_RELOAD') {
+        mainIframe.src = buildIframeSrc();
       }
     });
 
@@ -172,6 +179,7 @@
     });
     setTimeout(hideSplash, 3000); // فالبک اطمینان
 
+    consumeLegacyUrlToken();
     mainIframe.src = buildIframeSrc();
   </script>
 
