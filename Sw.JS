@@ -2,7 +2,7 @@
 // فقط شِل صفحه رو کش می‌کند تا معیار نصب واقعی (WebAPK) برآورده شود.
 // کاری با درخواست‌های داخل iframe (اسکریپت گوگل) ندارد.
 
-const CACHE_NAME = 'sahel-rafati-shell-v1';
+const CACHE_NAME = 'sahel-rafati-shell-v2';
 const SHELL_FILES = [
   './index.html',
   './manifest.json',
